@@ -26,7 +26,7 @@ function Cursos() {
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem' }}>
+                    <div className="grid-responsive" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem' }}>
                         {cursos.map((item, i) => (
                             <div key={i} className="glass-card" style={{ padding: '0', overflow: 'hidden', position: 'relative' }}>
                                 <div style={{ height: '200px', background: `linear-gradient(transparent, rgba(10,10,11,0.9)), url(${item.img})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>

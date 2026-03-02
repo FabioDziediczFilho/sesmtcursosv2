@@ -26,7 +26,7 @@ function Home() {
                         Domine as NRs com a maior autoridade em <span style={{ color: 'var(--primary-red)', fontWeight: 700 }}>Segurança do Trabalho</span> e <span style={{ color: 'var(--primary-red)', fontWeight: 700 }}>Resgate Industrial</span>.
                     </p>
 
-                    <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+                    <div className="flex-buttons" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
                         <button style={{ background: 'var(--primary-red)', color: 'white', padding: '1.2rem 3rem', fontSize: '1.1rem', fontWeight: 900, borderRadius: '4px', boxShadow: '0 0 30px rgba(255,0,0,0.4)', transform: 'skewX(-10deg)', transition: 'all 0.3s' }}>
                             <span style={{ display: 'inline-block', transform: 'skewX(10deg)' }}>CONHECER CURSOS</span>
                         </button>
@@ -50,7 +50,7 @@ function Home() {
                         <a href="#" style={{ color: 'var(--accent-yellow)', fontWeight: 700, fontSize: '0.9rem', borderBottom: '2px solid var(--accent-yellow)', paddingBottom: '4px' }}>VER TODOS OS CURSOS</a>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem' }}>
+                    <div className="grid-responsive" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem' }}>
                         {[
                             { title: 'DIREÇÃO DEFENSIVA', hours: '08H', color: 'var(--accent-yellow)', img: direcaoImg },
                             { title: 'NR35 TRABALHO EM ALTURA', hours: '16H', color: 'var(--primary-red)', img: nr35Img },

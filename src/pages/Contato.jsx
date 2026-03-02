@@ -10,7 +10,7 @@ function Contato() {
                         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>Solicite um orçamento para sua equipe ou tire suas dúvidas sobre nossos cursos.</p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
+                    <div className="grid-responsive" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
                         <div className="glass-card" style={{ padding: '3rem' }}>
                             <form>
                                 <div style={{ marginBottom: '1.5rem' }}>
