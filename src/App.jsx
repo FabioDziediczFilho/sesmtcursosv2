@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './index.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import WhatsAppButton from './components/WhatsAppButton'
 import Home from './pages/Home'
 import Cursos from './pages/Cursos'
 import Sesmt from './pages/Sesmt'
@@ -13,6 +14,7 @@ function App() {
     <Router>
       <div className="app">
         <Navbar />
+        <WhatsAppButton />
 
         <Routes>
           <Route path="/" element={<Home />} />
