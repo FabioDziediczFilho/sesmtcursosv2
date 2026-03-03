@@ -18,6 +18,8 @@ import CourseEditor from './pages/CourseEditor'
 import CoursePlayer from './pages/CoursePlayer'
 import Checkout from './pages/Checkout'
 import Certificate from './pages/Certificate'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
           <Route path="/contato" element={<Contato />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/leads" element={<LeadsManagement />} />
           <Route path="/ead-settings" element={<EADSettings />} />

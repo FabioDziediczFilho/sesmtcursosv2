@@ -55,7 +55,7 @@ const Login = () => {
                     <div style={{ marginBottom: '2rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <label style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Senha</label>
-                            <a href="#" style={{ color: 'var(--accent-yellow)', fontSize: '0.75rem', fontWeight: 700 }}>ESQUECEU A SENHA?</a>
+                            <Link to="/forgot-password" style={{ color: 'var(--accent-yellow)', fontSize: '0.75rem', fontWeight: 700 }}>ESQUECEU A SENHA?</Link>
                         </div>
                         <input
                             required
