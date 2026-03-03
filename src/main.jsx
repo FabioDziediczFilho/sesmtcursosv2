@@ -5,12 +5,16 @@ import { CourseProvider } from './context/CourseContext'
 import './index.css'
 import App from './App.jsx'
 
+import { BrowserRouter as Router } from 'react-router-dom'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <CourseProvider>
-        <App />
-      </CourseProvider>
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <CourseProvider>
+          <App />
+        </CourseProvider>
+      </AuthProvider>
+    </Router>
   </StrictMode>,
 )
