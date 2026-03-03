@@ -1,9 +1,17 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function Navbar() {
     const location = useLocation()
+    const navigate = useNavigate()
+    const { user, logout } = useAuth()
     const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+
+    const handleLogout = () => {
+        logout()
+        navigate('/')
+    }
 
     const isActive = (path) => location.pathname === path
 
@@ -23,8 +31,17 @@ function Navbar() {
             </nav>
 
             <div className="auth" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <Link to="/login" style={{ background: 'transparent', color: 'white', fontWeight: 700, fontSize: '0.85rem' }}>LOGIN</Link>
-                <button style={{ background: '#22c55e', color: 'white', padding: '0.6rem 1.5rem', borderRadius: '4px', fontWeight: 900, fontSize: '0.85rem' }}>CADASTRE-SE</button>
+                {user ? (
+                    <>
+                        <Link to="/dashboard" style={{ color: 'white', fontWeight: 700, fontSize: '0.85rem' }}>OLÁ, {user.name.toUpperCase()}</Link>
+                        <button onClick={handleLogout} style={{ background: 'transparent', color: 'var(--primary-red)', fontWeight: 700, fontSize: '0.85rem' }}>SAIR</button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/login" style={{ background: 'transparent', color: 'white', fontWeight: 700, fontSize: '0.85rem' }}>LOGIN</Link>
+                        <Link to="/signup" style={{ background: '#22c55e', color: 'white', padding: '0.6rem 1.5rem', borderRadius: '4px', fontWeight: 900, fontSize: '0.85rem' }}>CADASTRE-SE</Link>
+                    </>
+                )}
 
                 {/* Botão Mobile */}
                 <button

@@ -9,6 +9,15 @@ import Cursos from './pages/Cursos'
 import Sesmt from './pages/Sesmt'
 import Contato from './pages/Contato'
 import Login from './pages/Login'
+import SignUp from './pages/SignUp'
+import Dashboard from './pages/Dashboard'
+import LeadsManagement from './pages/LeadsManagement'
+import EADSettings from './pages/EADSettings'
+import CourseCreator from './pages/CourseCreator'
+import CourseEditor from './pages/CourseEditor'
+import CoursePlayer from './pages/CoursePlayer'
+import Checkout from './pages/Checkout'
+import Certificate from './pages/Certificate'
 
 function App() {
   return (
@@ -23,6 +32,15 @@ function App() {
           <Route path="/sesmt" element={<Sesmt />} />
           <Route path="/contato" element={<Contato />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/leads" element={<LeadsManagement />} />
+          <Route path="/ead-settings" element={<EADSettings />} />
+          <Route path="/create-course" element={<CourseCreator />} />
+          <Route path="/edit-course/:id" element={<CourseEditor />} />
+          <Route path="/player/:id" element={<CoursePlayer />} />
+          <Route path="/checkout/:id" element={<Checkout />} />
+          <Route path="/certificate/:id" element={<Certificate />} />
         </Routes>
 
         <Footer />

@@ -1,10 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useCourses } from '../context/CourseContext'
 import heroImg from '../assets/images/hero.png'
-import direcaoImg from '../assets/images/direcao.png'
-import nr35Img from '../assets/images/nr35.png'
 
 function Home() {
+    const { user } = useAuth();
+    const { courses, checkOwnership } = useCourses();
+
+    // Pegar apenas os 3 primeiros para o preview
+    const featuredCourses = courses.slice(0, 3);
     return (
         <>
             {/* Hero Section */}
@@ -48,27 +53,36 @@ function Home() {
                             <div style={{ color: 'var(--primary-red)', fontWeight: 900, letterSpacing: '2px', fontSize: '0.8rem', marginBottom: '0.5rem' }}>CATÁLOGO 2024</div>
                             <h2 style={{ fontSize: '3rem' }}>CURSOS DE ELITE</h2>
                         </div>
-                        <a href="#" style={{ color: 'var(--accent-yellow)', fontWeight: 700, fontSize: '0.9rem', borderBottom: '2px solid var(--accent-yellow)', paddingBottom: '4px' }}>VER TODOS OS CURSOS</a>
+                        <Link to="/cursos" style={{ color: 'var(--accent-yellow)', fontWeight: 700, fontSize: '0.9rem', borderBottom: '2px solid var(--accent-yellow)', paddingBottom: '4px' }}>VER TODOS OS CURSOS</Link>
                     </div>
 
                     <div className="grid-responsive" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem' }}>
-                        {[
-                            { title: 'DIREÇÃO DEFENSIVA', hours: '08H', color: 'var(--accent-yellow)', img: direcaoImg },
-                            { title: 'NR35 TRABALHO EM ALTURA', hours: '16H', color: 'var(--primary-red)', img: nr35Img },
-                            { title: 'BOMBEIRO CIVIL', hours: '210H', color: 'var(--primary-red)', img: heroImg },
-                        ].map((item, i) => (
-                            <div key={i} className="glass-card" style={{ padding: '0', overflow: 'hidden', position: 'relative' }}>
-                                <div style={{ height: '240px', background: `linear-gradient(transparent, rgba(10,10,11,0.9)), url(${item.img})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
-                                    <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.8)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 900, border: `1px solid ${item.color}` }}>
-                                        {item.hours}
+                        {featuredCourses.map((item, i) => (
+                            <div key={item.id || i} className="glass-card" style={{ padding: '0', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ height: '240px', background: `linear-gradient(transparent, rgba(10,10,11,0.9)), url(${item.image})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.8)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 900, border: '1px solid var(--accent-yellow)' }}>
+                                        {item.duration}
                                     </div>
                                 </div>
                                 <div style={{ padding: '2rem' }}>
                                     <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem', color: 'white' }}>{item.title}</h3>
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Treinamento rigoroso seguindo todas as normas nacionais e internacionais de segurança.</p>
-                                    <a href={`https://wa.me/5541999548422?text=Olá! Tenho interesse no curso de ${item.title}.`} target="_blank" rel="noopener noreferrer" style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--industrial-border)', color: 'white', fontWeight: 900, borderRadius: '4px', transition: 'all 0.3s', fontSize: '0.8rem', letterSpacing: '1px', display: 'block', textAlign: 'center' }}>
-                                        MATRICULE-SE AGORA
-                                    </a>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>{item.description || "Treinamento rigoroso seguindo todas as normas nacionais e internacionais de segurança."}</p>
+
+                                    {!user ? (
+                                        <Link to="/signup" style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--industrial-border)', color: 'white', fontWeight: 900, borderRadius: '4px', transition: 'all 0.3s', fontSize: '0.8rem', letterSpacing: '1px', display: 'block', textAlign: 'center' }}>
+                                            MATRICULE-SE AGORA
+                                        </Link>
+                                    ) : (
+                                        checkOwnership(user.id, item.id) ? (
+                                            <Link to="/dashboard" style={{ width: '100%', padding: '1rem', background: '#22c55e', color: 'white', fontWeight: 900, borderRadius: '4px', transition: 'all 0.3s', fontSize: '0.8rem', display: 'block', textAlign: 'center' }}>
+                                                JÁ ADQUIRIDO - ACESSAR
+                                            </Link>
+                                        ) : (
+                                            <Link to={`/checkout/${item.id}`} style={{ width: '100%', padding: '1rem', background: 'var(--primary-red)', color: 'white', fontWeight: 900, borderRadius: '4px', transition: 'all 0.3s', fontSize: '0.8rem', display: 'block', textAlign: 'center' }}>
+                                                COMPRAR TREINAMENTO
+                                            </Link>
+                                        )
+                                    )}
                                 </div>
                             </div>
                         ))}
