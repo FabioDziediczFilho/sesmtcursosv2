@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import heroImg from '../assets/images/hero.png'
 import direcaoImg from '../assets/images/direcao.png'
 import nr35Img from '../assets/images/nr35.png'
