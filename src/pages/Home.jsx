@@ -31,7 +31,7 @@ function Home() {
                         <Link to="/cursos" style={{ background: 'var(--primary-red)', color: 'white', padding: '1.2rem 3rem', fontSize: '1.1rem', fontWeight: 900, borderRadius: '4px', boxShadow: '0 0 30px rgba(255,0,0,0.4)', transform: 'skewX(-10deg)', transition: 'all 0.3s', display: 'inline-block' }}>
                             <span style={{ display: 'inline-block', transform: 'skewX(10deg)' }}>CONHECER CURSOS</span>
                         </Link>
-                        <a href="https://wa.me/5511999999999?text=Olá! Gostaria de falar com um consultor da CSE." target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '1.2rem 3rem', fontSize: '1.1rem', fontWeight: 900, borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(5px)', transform: 'skewX(-10deg)', display: 'inline-block' }}>
+                        <a href="https://wa.me/5541999548422?text=Olá! Gostaria de falar com um consultor da CSE." target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '1.2rem 3rem', fontSize: '1.1rem', fontWeight: 900, borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(5px)', transform: 'skewX(-10deg)', display: 'inline-block' }}>
                             <span style={{ display: 'inline-block', transform: 'skewX(10deg)' }}>FALAR CONSULTOR</span>
                         </a>
                     </div>
@@ -66,7 +66,7 @@ function Home() {
                                 <div style={{ padding: '2rem' }}>
                                     <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem', color: 'white' }}>{item.title}</h3>
                                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Treinamento rigoroso seguindo todas as normas nacionais e internacionais de segurança.</p>
-                                    <a href={`https://wa.me/5511999999999?text=Olá! Tenho interesse no curso de ${item.title}.`} target="_blank" rel="noopener noreferrer" style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--industrial-border)', color: 'white', fontWeight: 900, borderRadius: '4px', transition: 'all 0.3s', fontSize: '0.8rem', letterSpacing: '1px', display: 'block', textAlign: 'center' }}>
+                                    <a href={`https://wa.me/5541999548422?text=Olá! Tenho interesse no curso de ${item.title}.`} target="_blank" rel="noopener noreferrer" style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid var(--industrial-border)', color: 'white', fontWeight: 900, borderRadius: '4px', transition: 'all 0.3s', fontSize: '0.8rem', letterSpacing: '1px', display: 'block', textAlign: 'center' }}>
                                         MATRICULE-SE AGORA
                                     </a>
                                 </div>
