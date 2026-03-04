@@ -13,8 +13,8 @@ export const AuthProvider = ({ children }) => {
         const email = sessionUser.email;
         const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
 
-        // Promoção automática se o email for o do dono
-        const isOwner = adminEmail && email === adminEmail;
+        // Promoção automática se o email for o do dono (case-insensitive)
+        const isOwner = adminEmail && email?.toLowerCase() === adminEmail.toLowerCase();
 
         return {
             id: sessionUser.id,
@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const sendPasswordReset = async (email) => {
+        console.log("Solicitando reset de senha para:", email);
         // Redirecionamos para a raiz (Home) para evitar o erro 404 do Vercel
         // O radar de segurança no App.jsx detectará o evento e abrirá a tela de reset
         const resetLink = window.location.origin;
