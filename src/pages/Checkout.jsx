@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useCourses } from '../context/CourseContext';
+import { usePayment } from '../context/PaymentContext';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Checkout = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const { courses, purchaseCourse } = useCourses();
+    const { mpConfig } = usePayment();
     const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -62,19 +63,19 @@ const Checkout = () => {
                             <h3 style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>Como você prefere pagar?</h3>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div style={{ padding: '1.5rem', border: '2px solid #009ee3', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.5rem', background: '#f0f9ff' }}>
-                                    <div style={{ fontSize: '1.5rem' }}>💳</div>
+                                <div style={{ padding: '1.5rem', border: `2px solid ${mpConfig.sandboxMode ? '#fbbf24' : '#009ee3'}`, borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.5rem', background: mpConfig.sandboxMode ? '#fffbeb' : '#f0f9ff' }}>
+                                    <div style={{ fontSize: '1.5rem' }}>{mpConfig.sandboxMode ? '🧪' : '💳'}</div>
                                     <div>
-                                        <div style={{ fontWeight: 700 }}>Cartão de Crédito (Sandbox)</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>Aprovação instantânea para testes</div>
+                                        <div style={{ fontWeight: 700 }}>{mpConfig.sandboxMode ? 'Cartão de Teste (Sandbox)' : 'Cartão de Crédito ou Débito'}</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>{mpConfig.sandboxMode ? 'Use os dados do painel de teste do MP' : 'Processado com segurança pelo Mercado Pago'}</div>
                                     </div>
                                 </div>
 
-                                <div style={{ padding: '1.5rem', border: '1px solid #ddd', borderRadius: '8px', opacity: 0.5, cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                                <div style={{ padding: '1.5rem', border: '1px solid #ddd', borderRadius: '8px', opacity: mpConfig.sandboxMode ? 0.5 : 1, cursor: mpConfig.sandboxMode ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '1.5rem', background: mpConfig.sandboxMode ? 'transparent' : '#fff' }}>
                                     <div style={{ fontSize: '1.5rem' }}>💠</div>
                                     <div>
                                         <div style={{ fontWeight: 700 }}>Pix</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>Desativado no modo simulação</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>{mpConfig.sandboxMode ? 'Desativado no modo simulação' : 'Aprovação em poucos segundos'}</div>
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +88,9 @@ const Checkout = () => {
                             </button>
 
                             <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.75rem', color: '#999' }}>
-                                Ambiente de testes seguro. Nenhum valor real será cobrado.
+                                {mpConfig.sandboxMode
+                                    ? "Ambiente de testes seguro. Nenhum valor real será cobrado."
+                                    : "Pagamento 100% seguro processado pelo Mercado Pago."}
                             </p>
                         </div>
 

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext'
 import { CourseProvider } from './context/CourseContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { PaymentProvider } from './context/PaymentContext'
 import './index.css'
 import App from './App.jsx'
 
@@ -13,9 +14,11 @@ createRoot(document.getElementById('root')).render(
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <CourseProvider>
-            <App />
-          </CourseProvider>
+          <PaymentProvider>
+            <CourseProvider>
+              <App />
+            </CourseProvider>
+          </PaymentProvider>
         </ThemeProvider>
       </AuthProvider>
     </Router>
