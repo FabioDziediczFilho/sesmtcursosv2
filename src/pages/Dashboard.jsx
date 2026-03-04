@@ -471,10 +471,6 @@ const FinanceiroTab = ({ mpConfig, updateMpConfig, transactions }) => {
                 </div>
             </div>
         </div>
-    )
-}
-            </div >
-        </div >
     );
 };
 
