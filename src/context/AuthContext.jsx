@@ -9,11 +9,18 @@ export const AuthProvider = ({ children }) => {
 
     const mapSessionUser = (sessionUser) => {
         if (!sessionUser) return null;
+
+        const email = sessionUser.email;
+        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+
+        // Promoção automática se o email for o do dono
+        const isOwner = adminEmail && email === adminEmail;
+
         return {
             id: sessionUser.id,
-            email: sessionUser.email,
-            name: sessionUser.user_metadata?.full_name || sessionUser.email.split('@')[0],
-            role: sessionUser.user_metadata?.role || 'student'
+            email: email,
+            name: sessionUser.user_metadata?.full_name || email.split('@')[0],
+            role: isOwner ? 'admin' : (sessionUser.user_metadata?.role || 'student')
         };
     };
 
