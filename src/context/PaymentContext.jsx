@@ -64,7 +64,7 @@ export const PaymentProvider = ({ children }) => {
         fetchPaymentEvents();
     }, []);
 
-    const createPreference = async (userId, course) => {
+    const createPreference = async (user, course) => {
         if (!mpConfig.accessToken) {
             throw new Error("Access Token não configurado. Vá ao Dashboard > Financeiro.");
         }
@@ -89,7 +89,7 @@ export const PaymentProvider = ({ children }) => {
                     payer: {
                         email: user.email
                     },
-                    external_reference: `${userId}|${course.id}`,
+                    external_reference: `${user.id}|${course.id}`,
                     back_urls: {
                         success: `${window.location.origin}/dashboard?status=success&courseId=${course.id}`,
                         failure: `${window.location.origin}/checkout/${course.id}?status=failure`,

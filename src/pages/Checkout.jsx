@@ -35,7 +35,7 @@ const Checkout = () => {
 
         try {
             // Chamada real para gerar a preferência de pagamento no Mercado Pago
-            const preference = await createPreference(user.id, course);
+            const preference = await createPreference(user, course);
 
             // Decidir qual URL de checkout usar (Sandbox ou Produção)
             const checkoutUrl = mpConfig.sandboxMode
