@@ -9,21 +9,40 @@ const SignUp = () => {
         name: '',
         email: '',
         password: '',
-        cpf: ''
+        cpf: '',
+        confirmPassword: ''
     });
 
     const [isSigningUp, setIsSigningUp] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Obter token do hCaptcha
+        const captchaToken = window.hcaptcha.getResponse();
+        if (!captchaToken) {
+            setError('Por favor, complete a verificação de segurança (Captcha).');
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            setError('As senhas não coincidem');
+            return;
+        }
+
         setIsSigningUp(true);
+        setError('');
+
         try {
-            await signup(formData);
+            await signup(formData, captchaToken);
+            setSuccess(true);
             alert("Conta criada com sucesso! Verifique seu e-mail se necessário.");
             navigate('/dashboard');
         } catch (err) {
             console.error("Erro no cadastro:", err.message);
-            alert("Erro ao criar conta: " + err.message);
+            setError(err.message || 'Erro ao criar conta. Tente novamente.');
         } finally {
             setIsSigningUp(false);
         }
@@ -39,7 +58,23 @@ const SignUp = () => {
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>Entre para a elite da segurança industrial</p>
                 </div>
 
+                {error && (
+                    <div style={{
+                        padding: '1rem',
+                        borderRadius: '4px',
+                        marginBottom: '1.5rem',
+                        fontSize: '0.85rem',
+                        background: 'rgba(255, 68, 68, 0.1)',
+                        color: '#ff4444',
+                        border: '1px solid #ff4444',
+                        textAlign: 'center'
+                    }}>
+                        {error}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
+                    {/* ... campos existentes ... */}
                     <div style={{ marginBottom: '1.2rem' }}>
                         <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase' }}>Nome Completo</label>
                         <input
@@ -89,8 +124,33 @@ const SignUp = () => {
                         />
                     </div>
 
-                    <button style={{ width: '100%', padding: '1.2rem', background: 'var(--primary-red)', color: 'white', fontWeight: 900, borderRadius: '4px', border: 'none', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 20px rgba(255,0,0,0.3)', marginBottom: '1.5rem' }}>
-                        FINALIZAR CADASTRO
+                    <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+                        <div
+                            className="h-captcha"
+                            data-sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                            data-theme="dark"
+                        ></div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={isSigningUp}
+                        style={{
+                            width: '100%',
+                            padding: '1.2rem',
+                            background: 'var(--primary-red)',
+                            color: 'white',
+                            fontWeight: 900,
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: isSigningUp ? 'not-allowed' : 'pointer',
+                            opacity: isSigningUp ? 0.7 : 1,
+                            transition: 'all 0.3s',
+                            boxShadow: '0 4px 20px rgba(255,0,0,0.3)',
+                            marginBottom: '1.5rem'
+                        }}
+                    >
+                        {isSigningUp ? 'GERANDO ACESSO...' : 'FINALIZAR CADASTRO'}
                     </button>
 
                     <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>

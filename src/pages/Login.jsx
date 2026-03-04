@@ -8,19 +8,29 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoggingIn(true);
+
+        // Obter token do hCaptcha
+        const captchaToken = window.hcaptcha.getResponse();
+        if (!captchaToken) {
+            setError('Por favor, complete a verificação de segurança (Captcha).');
+            return;
+        }
+
+        setIsLoading(true);
+        setError('');
+
         try {
-            await login(email, password);
+            await login(email, password, captchaToken);
             navigate('/dashboard');
         } catch (err) {
-            console.error("Erro no login:", err.message);
-            alert("Erro ao entrar: Verifique seu e-mail e senha. " + (err.message.includes("Invalid login") ? "Dados inválidos." : ""));
+            setError(err.message || 'Erro ao fazer login. Verifique seus dados.');
         } finally {
-            setIsLoggingIn(false);
+            setIsLoading(false);
         }
     };
 
@@ -31,13 +41,20 @@ const Login = () => {
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'var(--primary-red)' }}></div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, width: '40px', height: '40px', backgroundImage: 'var(--hazard-pattern)', opacity: 0.2 }}></div>
 
-                <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                    <div className="logo" style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--primary-red)', justifyContent: 'center', marginBottom: '1rem' }}>
-                        CSE<span style={{ color: 'white' }}>TREINA</span>
+                {error && (
+                    <div style={{
+                        padding: '1rem',
+                        borderRadius: '4px',
+                        marginBottom: '1.5rem',
+                        fontSize: '0.85rem',
+                        background: 'rgba(255, 68, 68, 0.1)',
+                        color: '#ff4444',
+                        border: '1px solid #ff4444',
+                        textAlign: 'center'
+                    }}>
+                        {error}
                     </div>
-                    <h2 style={{ fontSize: '1.5rem', letterSpacing: '1px' }}>ACESSO AO PORTAL</h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>Bem-vindo ao Centro de Segurança e Emergências</p>
-                </div>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '1.5rem' }}>
@@ -67,8 +84,33 @@ const Login = () => {
                         />
                     </div>
 
-                    <button type="submit" style={{ width: '100%', padding: '1.2rem', background: 'var(--primary-red)', color: 'white', fontWeight: 900, borderRadius: '4px', border: 'none', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 20px rgba(255,0,0,0.3)', marginBottom: '1.5rem' }}>
-                        ENTRAR NO PORTAL
+                    <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+                        <div
+                            className="h-captcha"
+                            data-sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                            data-theme="dark"
+                        ></div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        style={{
+                            width: '100%',
+                            padding: '1.2rem',
+                            background: 'var(--primary-red)',
+                            color: 'white',
+                            fontWeight: 900,
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: isLoading ? 'not-allowed' : 'pointer',
+                            opacity: isLoading ? 0.7 : 1,
+                            transition: 'all 0.3s',
+                            boxShadow: '0 4px 20px rgba(255,0,0,0.3)',
+                            marginBottom: '1.5rem'
+                        }}
+                    >
+                        {isLoading ? 'AUTENTICANDO...' : 'ENTRAR NO PORTAL'}
                     </button>
 
                     <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
