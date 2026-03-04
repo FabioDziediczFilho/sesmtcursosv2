@@ -22,7 +22,6 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 
 import { supabase } from './lib/supabaseClient'
-import { useNavigate } from 'react-router-dom'
 
 function App() {
   const navigate = useNavigate()
