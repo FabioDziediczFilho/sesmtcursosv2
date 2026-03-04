@@ -18,7 +18,10 @@ const ForgotPassword = () => {
             setMessage({ type: 'success', text: 'E-mail de recuperação enviado! Verifique sua caixa de entrada.' });
         } catch (err) {
             console.error(err);
-            setMessage({ type: 'error', text: 'Erro ao enviar e-mail. Verifique se o endereço está correto.' });
+            const errorMsg = err.message.includes("after")
+                ? `Segurança: Aguarde ${err.message.match(/\d+/)} segundos para tentar novamente.`
+                : "Erro ao enviar e-mail. Verifique os dados ou tente mais tarde.";
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsSending(false);
         }
