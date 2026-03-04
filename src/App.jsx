@@ -28,7 +28,9 @@ function App() {
 
   React.useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Evento Auth em App.jsx:", event)
       if (event === 'PASSWORD_RECOVERY') {
+        console.log("Redirecionando para /reset-password...")
         navigate('/reset-password')
       }
     })
