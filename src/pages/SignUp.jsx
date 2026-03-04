@@ -20,25 +20,6 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Obter token do hCaptcha com segurança
-        let captchaToken = '';
-        try {
-            if (window.hcaptcha) {
-                captchaToken = window.hcaptcha.getResponse();
-            } else {
-                setError('O sistema de segurança está carregando. Aguarde um instante.');
-                return;
-            }
-        } catch (err) {
-            setError('Erro no sistema de segurança. Recarregue a página.');
-            return;
-        }
-
-        if (!captchaToken) {
-            setError('Por favor, complete a verificação de segurança (Captcha).');
-            return;
-        }
-
         if (formData.password !== formData.confirmPassword) {
             setError('As senhas não coincidem');
             return;
@@ -48,7 +29,7 @@ const SignUp = () => {
         setError('');
 
         try {
-            await signup(formData, captchaToken);
+            await signup(formData);
             setSuccess(true);
             alert("Conta criada com sucesso! Verifique seu e-mail se necessário.");
             navigate('/dashboard');
@@ -134,14 +115,6 @@ const SignUp = () => {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             style={{ width: '100%', padding: '0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--industrial-border)', borderRadius: '4px', color: 'white', outline: 'none' }}
                         />
-                    </div>
-
-                    <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-                        <div
-                            className="h-captcha"
-                            data-sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
-                            data-theme="dark"
-                        ></div>
                     </div>
 
                     <button

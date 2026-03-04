@@ -39,11 +39,10 @@ export const AuthProvider = ({ children }) => {
         return () => subscription.unsubscribe();
     }, []);
 
-    const login = async (email, password, captchaToken) => {
+    const login = async (email, password) => {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
-            password,
-            options: { captchaToken }
+            password
         });
         if (error) {
             if (error.message.includes("Email not confirmed")) {
@@ -54,7 +53,7 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
-    const signup = async (userData, captchaToken) => {
+    const signup = async (userData) => {
         const { data, error } = await supabase.auth.signUp({
             email: userData.email,
             password: userData.password,
@@ -62,8 +61,7 @@ export const AuthProvider = ({ children }) => {
                 data: {
                     full_name: userData.name || userData.email.split('@')[0],
                     role: 'student'
-                },
-                captchaToken
+                }
             }
         });
         if (error) throw error;
@@ -74,13 +72,12 @@ export const AuthProvider = ({ children }) => {
         await supabase.auth.signOut();
     };
 
-    const sendPasswordReset = async (email, captchaToken) => {
+    const sendPasswordReset = async (email) => {
         // Redirecionamos para a raiz (Home) para evitar o erro 404 do Vercel
         // O radar de segurança no App.jsx detectará o evento e abrirá a tela de reset
         const resetLink = window.location.origin;
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: resetLink,
-            captchaToken
+            redirectTo: resetLink
         });
         if (error) throw error;
     };

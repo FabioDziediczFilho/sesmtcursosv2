@@ -14,30 +14,11 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Obter token do hCaptcha com segurança
-        let captchaToken = '';
-        try {
-            if (window.hcaptcha) {
-                captchaToken = window.hcaptcha.getResponse();
-            } else {
-                setError('O sistema de segurança (Captcha) está carregando. Aguarde um instante.');
-                return;
-            }
-        } catch (err) {
-            setError('Erro no sistema de segurança. Por favor, recarregue a página.');
-            return;
-        }
-
-        if (!captchaToken) {
-            setError('Por favor, complete a verificação de segurança (Captcha).');
-            return;
-        }
-
         setIsLoading(true);
         setError('');
 
         try {
-            await login(email, password, captchaToken);
+            await login(email, password);
             navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Erro ao fazer login. Verifique seus dados.');
@@ -94,14 +75,6 @@ const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--industrial-border)', borderRadius: '4px', color: 'white', outline: 'none' }}
                         />
-                    </div>
-
-                    <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-                        <div
-                            className="h-captcha"
-                            data-sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
-                            data-theme="dark"
-                        ></div>
                     </div>
 
                     <button

@@ -14,20 +14,13 @@ const ForgotPassword = () => {
     const handleSendEmail = async (e) => {
         e.preventDefault();
 
-        const captchaToken = window.hcaptcha?.getResponse();
-        if (!captchaToken) {
-            setMessage({ type: 'error', text: 'Por favor, complete a verificação de segurança (Captcha).' });
-            return;
-        }
-
         setIsSending(true);
         setMessage({ type: '', text: '' });
 
         try {
-            await sendPasswordReset(email, captchaToken);
+            await sendPasswordReset(email);
             setMessage({ type: 'success', text: 'E-mail enviado! Agora digite o código de 6 dígitos que você recebeu.' });
             setStep('code');
-            window.hcaptcha?.reset(); // Resetar captcha para o próximo passo se necessário
         } catch (err) {
             console.error(err);
             const errorMsg = err.message.includes("after")
@@ -99,10 +92,6 @@ const ForgotPassword = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--industrial-border)', borderRadius: '4px', color: 'white', outline: 'none' }}
                             />
-                        </div>
-
-                        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-                            <div className="h-captcha" data-sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY} data-theme="dark"></div>
                         </div>
 
                         <button
