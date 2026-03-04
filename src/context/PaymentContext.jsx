@@ -86,6 +86,9 @@ export const PaymentProvider = ({ children }) => {
                             currency_id: 'BRL'
                         }
                     ],
+                    payer: {
+                        email: user.email
+                    },
                     external_reference: `${userId}|${course.id}`,
                     back_urls: {
                         success: `${window.location.origin}/dashboard?status=success&courseId=${course.id}`,
