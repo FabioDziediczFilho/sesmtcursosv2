@@ -65,51 +65,25 @@ export const PaymentProvider = ({ children }) => {
     }, []);
 
     const createPreference = async (user, course) => {
-        if (!mpConfig.accessToken) {
-            throw new Error("Access Token não configurado. Vá ao Dashboard > Financeiro.");
-        }
-
         try {
-            const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+            const response = await fetch('/api/payment/create', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${mpConfig.accessToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    items: [
-                        {
-                            id: course.id,
-                            title: course.title,
-                            unit_price: parseFloat(course.price.replace('.', '').replace(',', '.')),
-                            quantity: 1,
-                            currency_id: 'BRL'
-                        }
-                    ],
-                    payer: {
-                        email: user.email,
-                        name: user.name,
-                        first_name: user.name.split(' ')[0],
-                        last_name: user.name.split(' ').slice(1).join(' ') || 'Aluno'
-                    },
-                    external_reference: `${user.id}|${course.id}`,
-                    back_urls: {
-                        success: `${window.location.origin}/dashboard?status=success&courseId=${course.id}`,
-                        failure: `${window.location.origin}/checkout/${course.id}?status=failure`,
-                        pending: `${window.location.origin}/dashboard?status=pending`
-                    },
-                    auto_return: 'approved'
-                })
+                body: JSON.stringify({ user, course })
             });
 
             const data = await response.json();
-            if (data.id) {
+
+            if (response.ok) {
+                console.log("Pix Gerado com Sucesso:", data);
                 return data;
             } else {
-                throw new Error(data.message || "Erro ao gerar preferência de pagamento");
+                throw new Error(data.error || data.message || "Erro ao gerar o Pix");
             }
         } catch (err) {
-            console.error("Erro MP:", err);
+            console.error("Erro no Fluxo de Pagamento Direct:", err);
             throw err;
         }
     };

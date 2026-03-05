@@ -12,7 +12,8 @@ const Checkout = () => {
     const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [step, setStep] = useState('payment'); // 'payment', 'processing', 'success'
+    const [step, setStep] = useState('payment'); // 'payment', 'processing', 'success', 'pix_waiting'
+    const [pixData, setPixData] = useState(null);
 
     useEffect(() => {
         const found = courses.find(c => c.id === id);
@@ -25,31 +26,21 @@ const Checkout = () => {
             return;
         }
 
-        if (!mpConfig.accessToken) {
-            alert("Erro de Configuração: O administrador (Fábio) ainda não configurou o Access Token do Mercado Pago no Dashboard.");
-            return;
-        }
-
         setIsProcessing(true);
         setStep('processing');
 
         try {
-            // Chamada real para gerar a preferência de pagamento no Mercado Pago
-            const preference = await createPreference(user, course);
+            // Chamada para nossa API interna que gera o Pix Direto
+            const result = await createPreference(user, course);
 
-            // Decidir qual URL de checkout usar (Sandbox ou Produção)
-            const checkoutUrl = mpConfig.sandboxMode
-                ? preference.sandbox_init_point
-                : preference.init_point;
-
-            if (checkoutUrl) {
-                // Redireciona o usuário para o Mercado Pago
-                window.location.href = checkoutUrl;
+            if (result.qr_code) {
+                setPixData(result);
+                setStep('pix_waiting');
             } else {
-                throw new Error("Link de checkout não gerado pelo Mercado Pago.");
+                throw new Error("Não foi possível gerar os dados do Pix.");
             }
         } catch (err) {
-            console.error("Erro no checkout real:", err);
+            console.error("Erro no checkout transparente:", err);
             alert(`Erro no Pagamento: ${err.message}`);
             setStep('payment');
         } finally {
@@ -68,25 +59,17 @@ const Checkout = () => {
                         <div style={{ background: 'white', padding: '2.5rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
                                 <div style={{ width: '40px', height: '40px', background: '#009ee3', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 900 }}>MP</div>
-                                <h2 style={{ fontSize: '1.2rem', color: '#009ee3' }}>Mercado Pago <span style={{ color: '#999', fontWeight: 400, fontSize: '0.9rem' }}>| Checkout Pro</span></h2>
+                                <h2 style={{ fontSize: '1.2rem', color: '#009ee3' }}>Pagamento Direto <span style={{ color: '#999', fontWeight: 400, fontSize: '0.9rem' }}>| Seguro & Rápido</span></h2>
                             </div>
 
-                            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>Como você prefere pagar?</h3>
+                            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>Finalize sua matrícula via Pix</h3>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div style={{ padding: '1.5rem', border: `2px solid ${mpConfig.sandboxMode ? '#fbbf24' : '#009ee3'}`, borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.5rem', background: mpConfig.sandboxMode ? '#fffbeb' : '#f0f9ff' }}>
-                                    <div style={{ fontSize: '1.5rem' }}>{mpConfig.sandboxMode ? '🧪' : '💳'}</div>
+                                <div style={{ padding: '1.5rem', border: '2px solid #009ee3', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.5rem', background: '#f0f9ff' }}>
+                                    <div style={{ fontSize: '2.5rem' }}>💠</div>
                                     <div>
-                                        <div style={{ fontWeight: 700 }}>{mpConfig.sandboxMode ? 'Cartão de Teste (Sandbox)' : 'Cartão de Crédito ou Débito'}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>{mpConfig.sandboxMode ? 'Use os dados do painel de teste do MP' : 'Processado com segurança pelo Mercado Pago'}</div>
-                                    </div>
-                                </div>
-
-                                <div style={{ padding: '1.5rem', border: '1px solid #ddd', borderRadius: '8px', opacity: mpConfig.sandboxMode ? 0.5 : 1, cursor: mpConfig.sandboxMode ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '1.5rem', background: mpConfig.sandboxMode ? 'transparent' : '#fff' }}>
-                                    <div style={{ fontSize: '1.5rem' }}>💠</div>
-                                    <div>
-                                        <div style={{ fontWeight: 700 }}>Pix</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>{mpConfig.sandboxMode ? 'Desativado no modo simulação' : 'Aprovação em poucos segundos'}</div>
+                                        <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>Pix Instantâneo</div>
+                                        <div style={{ fontSize: '0.85rem', color: '#666' }}>O QR Code será gerado na próxima tela. Aprovação imediata!</div>
                                     </div>
                                 </div>
                             </div>
@@ -95,13 +78,11 @@ const Checkout = () => {
                                 onClick={handlePayment}
                                 style={{ width: '100%', marginTop: '2.5rem', padding: '1.2rem', background: '#009ee3', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 700, fontSize: '1.1rem', cursor: 'pointer' }}
                             >
-                                FINALIZAR PAGAMENTO
+                                GERAR QR CODE PIX
                             </button>
 
                             <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.75rem', color: '#999' }}>
-                                {mpConfig.sandboxMode
-                                    ? "Ambiente de testes seguro. Nenhum valor real será cobrado."
-                                    : "Pagamento 100% seguro processado pelo Mercado Pago."}
+                                Pagamento 100% seguro processado pelo Mercado Pago.
                             </p>
                         </div>
 
@@ -137,11 +118,57 @@ const Checkout = () => {
                 {step === 'processing' && (
                     <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
                         <div className="loader" style={{ width: '60px', height: '60px', border: '5px solid #f3f3f3', borderTop: '5px solid #009ee3', borderRadius: '50%', margin: '0 auto 2rem', animation: 'spin 1s linear infinite' }}></div>
-                        <h2 style={{ marginBottom: '1rem' }}>Processando seu pagamento...</h2>
-                        <p style={{ color: '#666' }}>Estamos validando os dados com o emissor do cartão.</p>
+                        <h2 style={{ marginBottom: '1rem' }}>Gerando seu Pix...</h2>
+                        <p style={{ color: '#666' }}>Aguarde um instante enquanto conectamos com o Mercado Pago.</p>
                         <style>{`
                             @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                         `}</style>
+                    </div>
+                )}
+
+                {step === 'pix_waiting' && pixData && (
+                    <div style={{ textAlign: 'center', padding: '3rem 2rem', background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', maxWidth: '500px', margin: '0 auto' }}>
+                        <div style={{ color: '#009ee3', fontSize: '3rem', marginBottom: '1rem' }}>💠</div>
+                        <h2 style={{ marginBottom: '0.5rem' }}>Quase lá!</h2>
+                        <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escaneie o QR Code ou use o código Copia e Cola abaixo para pagar no seu banco.</p>
+
+                        <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem', display: 'inline-block' }}>
+                            <img
+                                src={`data:image/png;base64,${pixData.qr_code_base64}`}
+                                alt="QR Code Pix"
+                                style={{ width: '200px', height: '200px', margin: '0 auto' }}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '2rem', textAlign: 'left' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#999', display: 'block', marginBottom: '0.5rem' }}>PIX COPIA E COLA</label>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input
+                                    readOnly
+                                    value={pixData.qr_code}
+                                    style={{ flex: 1, padding: '0.8rem', background: '#eee', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.7rem', fontFamily: 'monospace' }}
+                                />
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(pixData.qr_code);
+                                        alert("Código Pix Copiado!");
+                                    }}
+                                    style={{ background: '#009ee3', color: 'white', border: 'none', padding: '0 1rem', borderRadius: '4px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
+                                >
+                                    COPIAR
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ borderTop: '1px solid #eee', paddingTop: '2rem' }}>
+                            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>Após o pagamento, o seu curso será liberado <strong>automaticamente</strong> em alguns segundos. Você pode fechar esta tela após pagar.</p>
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                style={{ width: '100%', padding: '1rem', background: '#22c55e', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                                JÁ PAGUEI, IR PARA O PAINEL
+                            </button>
+                        </div>
                     </div>
                 )}
 
