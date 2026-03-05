@@ -48,31 +48,42 @@ const Dashboard = () => {
 
         const fetchStats = async () => {
             try {
-                // 1. Total Alunos (Baseado em matriculas únicas)
+                // 1. Total Alunos & Vendas (Baseado em matriculas reais)
                 const { data: enrollments, error: enrollError } = await supabase
                     .from('enrollments')
-                    .select('user_id');
+                    .select('user_id, course_id, created_at');
 
                 if (!enrollError && enrollments) {
                     const uniqueUsers = new Set(enrollments.map(e => e.user_id));
-                    setStats(prev => ({ ...prev, totalAlunos: uniqueUsers.size }));
 
-                    // 2. Vendas Mês (Soma dos preços dos cursos matriculados)
-                    // Nota: Fazemos um join manual simples ou buscamos os cursos
+                    // Filtrar vendas deste mês
+                    const now = new Date();
+                    const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
                     let totalVendas = 0;
                     enrollments.forEach(e => {
-                        const course = courses.find(c => c.id === e.course_id);
-                        if (course) {
-                            const price = parseFloat(course.price.replace(',', '.'));
-                            if (!isNaN(price)) totalVendas += price;
+                        const enrollDate = new Date(e.created_at);
+                        if (enrollDate >= firstDayMonth) {
+                            const course = courses.find(c => c.id === e.course_id);
+                            if (course) {
+                                // Limpeza robusta de preço: "R$ 1.200,50" -> "1200.50"
+                                const cleanPrice = course.price
+                                    .replace('R$', '')
+                                    .replace(/\./g, '')
+                                    .replace(',', '.')
+                                    .trim();
+                                const priceNum = parseFloat(cleanPrice);
+                                if (!isNaN(priceNum)) totalVendas += priceNum;
+                            }
                         }
                     });
-                    setStats(prev => ({ ...prev, vendasMes: totalVendas }));
+
+                    setStats({
+                        totalAlunos: uniqueUsers.size,
+                        vendasMes: totalVendas,
+                        leadsHoje: 0 // Implementaremos quando houver tabela de leads
+                    });
                 }
-
-                // 3. Leads (Zero por enquanto já que não há tabela física)
-                setStats(prev => ({ ...prev, leadsHoje: 0 }));
-
             } catch (err) {
                 console.error("Erro ao carregar estatísticas:", err);
             }
@@ -254,11 +265,7 @@ const Dashboard = () => {
                 )}
 
                 {activeTab === 'alunos' && (
-                    <div style={{ padding: '3rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--industrial-border)' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
-                        <h2 style={{ color: 'white', marginBottom: '1rem' }}>Gestão de Alunos</h2>
-                        <p style={{ color: 'var(--text-muted)' }}>Lista de matriculados e progresso individual em desenvolvimento.</p>
-                    </div>
+                    <AlunosTab courses={courses} />
                 )}
 
                 {activeTab === 'leads' && (
@@ -469,6 +476,75 @@ const FinanceiroTab = ({ mpConfig, updateMpConfig, transactions }) => {
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+};
+
+// Sub-componente para Gestão de Alunos
+const AlunosTab = ({ courses }) => {
+    const [enrollments, setEnrollments] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchEnrollments = async () => {
+            const { data, error } = await supabase
+                .from('enrollments')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (!error) setEnrollments(data);
+            setLoading(false);
+        };
+        fetchEnrollments();
+    }, []);
+
+    if (loading) return <div style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>Carregando dados dos alunos...</div>;
+
+    return (
+        <div className="glass-card" style={{ padding: '2rem', border: '1px solid var(--industrial-border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                <div style={{ fontSize: '1.5rem' }}>👥</div>
+                <h2 style={{ color: 'white' }}>Gestão de Alunos e Matrículas</h2>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+                    <thead>
+                        <tr style={{ borderBottom: '2px solid var(--industrial-border)', color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                            <th style={{ padding: '1rem' }}>ALUNO (ID)</th>
+                            <th style={{ padding: '1rem' }}>CURSO</th>
+                            <th style={{ padding: '1rem' }}>DATA MATRÍCULA</th>
+                            <th style={{ padding: '1rem' }}>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {enrollments.length > 0 ? enrollments.map((enr, idx) => {
+                            const course = courses.find(c => c.id === enr.course_id);
+                            return (
+                                <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.85rem' }}>
+                                    <td style={{ padding: '1rem' }}>
+                                        <div style={{ color: 'white', fontWeight: 700 }}>{enr.user_id.substring(0, 8)}...</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>ID: {enr.user_id}</div>
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <div style={{ color: 'white' }}>{course?.title || 'Curso Removido'}</div>
+                                    </td>
+                                    <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>
+                                        {new Date(enr.created_at).toLocaleDateString('pt-BR')}
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span style={{ padding: '0.2rem 0.6rem', background: '#22c55e', color: 'black', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 900 }}>ATIVO</span>
+                                    </td>
+                                </tr>
+                            );
+                        }) : (
+                            <tr>
+                                <td colSpan="4" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>Nenhum aluno matriculado ainda.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
